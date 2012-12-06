@@ -5,18 +5,17 @@ from time import gmtime, strftime
 url = ""
 folder = ""
 time = ""
-surl = url.replace("http://","")
-
-def cleanchars(string):		# Create a character removal table
+surl = ""
+def cleanchars(s):		# Create a character removal table
 	chartab = {
 				ord(';'): None,ord('['): None,ord('<'): None,
 				ord('!'): None,ord('='): None,ord('|'): None,
 				ord('"'): None,ord('+'): None,ord('\\'): None,
 				ord('£'): None,ord('-'): None,ord('`'): None,
 				ord('$'): None,ord('_'): None,ord('¬'): None,
-				ord('%'): None,ord(':'): None,
-				ord('^'): None,ord('#'): None,
-				ord('&'): None,ord('~'): None,
+				ord('%'): None,ord(':'): None,ord('¬'): None,
+				ord('^'): None,ord('#'): None,ord('¬'): None,
+				ord('&'): None,ord('~'): None,ord('¬'): None,
 				ord('*'): None,ord('\''): None,
 				ord('('): None,ord('@'): None,
 				ord(')'): None,ord('?'): None,
@@ -24,29 +23,29 @@ def cleanchars(string):		# Create a character removal table
 				ord('{'): None,ord(','): None,
 				ord(']'): None,ord('>'): None,
 			}
-	return string.translate(chartab)
+	return s.translate(chartab)
 
-def whaturl():
+def whaturl(): # Ask the user for the URL they want to monitor
 # Get the user to enter URL
-	global url	
+	global url, surl
 	url = input('What URL? ')
-
-	if url[:7] == "http://":
+	surl = cleanchars(url)
+	print("We're going to give this URL a whirl: http://" + surl)
+# Check if the user added the required "http://" at the front of the URL
+	if url[:7] != "http://":
 		print("You missed out the http://, but no worries, I've added it for you! ")
-		
-	elif url[:8] == "https://":
-		print("removing https:// from filename")
+		if url[:8] == "https://":
+			print("Sorry, I cannot perform this on secure URLs at the moment") # Add support for https
 	#url = input.replace("http://", new)
 	#surl = url.replace("http://","")
-
-def freq():
-	global freq
-	freq = input('How often shall we check this page? (in seconds) ')
-	return freq
+#def freq():
+#	global freq
+#	freq = input('How often shall we check this page? (in seconds) ')
 def checkexists():
 # Check if dir exists, return True / False
-	global folder# @todo Need correcting if global is wrong and or dangerous
-	surl = url.replace("http://","")
+	# @todo Need correcting if global is wrong and or dangerous
+	global url, folder
+	url = ''.join(['http://', surl])
 	folder = "tmp/" + surl[:24]
 	if os.path.exists(folder):
 		print("We've done this before, let me just check something.. ")
@@ -57,13 +56,11 @@ def checkexists():
 def createdir():
 # Create the directory
 	print("gonna try to make a folder!")
-	surl = url.replace("http://","")
 	global folder# @todo Need correcting if global is wrong and or dangerous
 	folder = "tmp/" + surl[:24] 
 	os.makedirs(folder + "/grabs", exist_ok=True)
 	print("We've made a new folder for you")
 def grabpage():
-	surl = url.replace("http://","")
 	global time
 	time = strftime("%Y%m%d_%H%M%S", gmtime())
 	filename = surl + time + ".html"
@@ -72,6 +69,7 @@ def grabpage():
 # Retrieve the URL
 	urllib.request.urlretrieve(url, folder  + "/grabs/" + filename )
 	print('File created.. ')
+# @todo Add exception for IOError here
 def cleanup():
 # Let's list the current files in the relevant data directory
 	ls = os.walk(folder + '/')
@@ -111,7 +109,7 @@ def comparepages():
 # Run the app..
 
 whaturl()
-freq()
+#freq()
 if checkexists() == True:
 	grabpage()
 	comparepages()
