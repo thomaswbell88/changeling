@@ -7,11 +7,38 @@ folder = ""
 time = ""
 surl = url.replace("http://","")
 
+def cleanchars(string):		# Create a character removal table
+	chartab = {
+				ord(';'): None,ord('['): None,ord('<'): None,
+				ord('!'): None,ord('='): None,ord('|'): None,
+				ord('"'): None,ord('+'): None,ord('\\'): None,
+				ord('£'): None,ord('-'): None,ord('`'): None,
+				ord('$'): None,ord('_'): None,ord('¬'): None,
+				ord('%'): None,ord(':'): None,
+				ord('^'): None,ord('#'): None,
+				ord('&'): None,ord('~'): None,
+				ord('*'): None,ord('\''): None,
+				ord('('): None,ord('@'): None,
+				ord(')'): None,ord('?'): None,
+				ord('}'): None,ord('/'): None,
+				ord('{'): None,ord(','): None,
+				ord(']'): None,ord('>'): None,
+			}
+	return string.translate(chartab)
+
 def whaturl():
-	# Get the user to enter URL
+# Get the user to enter URL
 	global url	
 	url = input('What URL? ')
-	return url
+
+	if url[:7] == "http://":
+		print("You missed out the http://, but no worries, I've added it for you! ")
+		
+	elif url[:8] == "https://":
+		print("removing https:// from filename")
+	#url = input.replace("http://", new)
+	#surl = url.replace("http://","")
+
 def freq():
 	global freq
 	freq = input('How often shall we check this page? (in seconds) ')
