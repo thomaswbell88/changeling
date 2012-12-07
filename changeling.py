@@ -1,3 +1,5 @@
+#/usr/bin/python3.2
+
 import urllib.request, os, difflib
 
 # Global variables:
